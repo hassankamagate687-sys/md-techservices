@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head> <link rel="icon" type="image/png" href="favicon.png">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -757,7 +757,11 @@
 
     <!-- Form Container -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-      <form data-landingsite-contact-form="" class="space-y-8 p-8 sm:p-12">
+      <form data-landingsite-contact-form="" action="https://formsubmit.co/ajax/contact@md-techservices.com" method="POST" class="space-y-8 p-8 sm:p-12">
+        <!-- Formsubmit config -->
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="Nouvelle demande de devis - M&D Tech Services">
+        <input type="hidden" name="_template" value="table">
         <!-- Contact Information Section -->
         <div class="border-b border-[var(--light-border-color)] pb-8">
           <h3 class="font-['Poppins'] text-xl font-bold text-[var(--dark-text-color)] mb-6 flex items-center gap-3">
@@ -1068,5 +1072,50 @@
 
 
 
+
+<script>
+  /* === FORMSUBMIT vers contact@md-techservices.com + Redirection CHARIOW === */
+  (function() {
+    var frm = document.querySelector('form[data-landingsite-contact-form]');
+    if (!frm) return;
+
+    frm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var btn = frm.querySelector('button[type="submit"]');
+      var origHtml = btn ? btn.innerHTML : '';
+
+      // Show loading state
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Envoi en cours...</span>';
+        btn.disabled = true;
+      }
+
+      // Send to Formsubmit (forwards to contact@md-techservices.com)
+      fetch('https://formsubmit.co/ajax/contact@md-techservices.com', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(new FormData(frm)))
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success === 'true' || data.success === true) {
+          // Redirect to Chariow payment page
+          window.location.href = 'https://myfrursk.mychariow.shop/prd_3mwf4l';
+        } else {
+          alert('Un problème est survenu. Veuillez réessayer.');
+          if (btn) { btn.innerHTML = origHtml; btn.disabled = false; }
+        }
+      })
+      .catch(function() {
+        alert('Erreur réseau. Veuillez vérifier votre connexion et réessayer.');
+        if (btn) { btn.innerHTML = origHtml; btn.disabled = false; }
+      });
+    });
+  })();
+</script>
 </body>
 </html>
