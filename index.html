@@ -757,7 +757,11 @@
 
     <!-- Form Container -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-      <form data-landingsite-contact-form="" action="https://formspree.io/f/VOTRE_ID" method="POST" class="space-y-8 p-8 sm:p-12">
+      <form data-landingsite-contact-form="" action="https://api.web3forms.com/submit" method="POST" class="space-y-8 p-8 sm:p-12">
+        <!-- Web3Forms Access Key: Remplacez l'attribut value ci-dessous par votre clé obtenue sur web3forms.com -->
+        <input type="hidden" name="access_key" value="VOTRE_ACCESS_KEY_WEB3FORMS">
+        <input type="hidden" name="subject" value="Nouvelle demande de devis">
+        <input type="hidden" name="from_name" value="M&D Tech Services">
         <!-- Contact Information Section -->
         <div class="border-b border-[var(--light-border-color)] pb-8">
           <h3 class="font-['Poppins'] text-xl font-bold text-[var(--dark-text-color)] mb-6 flex items-center gap-3">
@@ -1070,7 +1074,7 @@
 
 
 <script>
-  /* === FORMSPREE + Redirection CHARIOW === */
+  /* === WEB3FORMS + Redirection CHARIOW === */
   (function() {
     var frm = document.querySelector('form[data-landingsite-contact-form]');
     if (!frm) return;
@@ -1087,32 +1091,29 @@
         btn.disabled = true;
       }
 
-      var formAction = frm.getAttribute('action');
+      const formData = new FormData(frm);
+      const object = Object.fromEntries(formData);
+      const json = JSON.stringify(object);
 
-      // Send to Formspree
-      fetch(formAction, {
+      fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
-        body: new FormData(frm)
+        body: json
       })
-      .then(function(res) {
-        if (res.ok) {
-          // Redirect to Chariow payment page
+      .then(async (response) => {
+        let jsonRes = await response.json();
+        if (response.status == 200) {
+          // Redirect to Chariow payment page limit bypassed
           window.location.href = 'https://myfrursk.mychariow.shop/prd_3mwf4l';
         } else {
-          res.json().then(function(data) {
-            if (Object.hasOwn(data, 'errors')) {
-              alert(data["errors"].map(error => error["message"]).join(", "));
-            } else {
-              alert("Un problème est survenu. Veuillez réessayer.");
-            }
-          });
+          alert(jsonRes.message ? jsonRes.message : "Un problème est survenu. Veuillez réessayer.");
           if (btn) { btn.innerHTML = origHtml; btn.disabled = false; }
         }
       })
-      .catch(function() {
+      .catch((error) => {
         alert('Erreur réseau. Veuillez vérifier votre connexion et réessayer.');
         if (btn) { btn.innerHTML = origHtml; btn.disabled = false; }
       });
