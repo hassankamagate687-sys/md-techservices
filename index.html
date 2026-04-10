@@ -1121,6 +1121,22 @@
       });
     });
   })();
+
+  /* === MENU MOBILE toggle + auto-fermeture === */
+  (function() {
+    var menuBtn = document.querySelector('[data-landingsite-mobile-menu-toggle]');
+    var mobileMenu = document.querySelector('[data-landingsite-mobile-menu]');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', function(){
+        mobileMenu.classList.toggle('hidden');
+      });
+      mobileMenu.querySelectorAll('a').forEach(function(a){
+        a.addEventListener('click', function(){
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    }
+  })();
 </script>
 </body>
 </html>
